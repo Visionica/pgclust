@@ -39,7 +39,7 @@ class SSHConnection(object):
                 self.session.userauth_password(self.username, self.password)
             else:
                 self.session.userauth_publickey_fromfile(self.username, self.public_key, self.private_key, self.password)
-        except Exception, e:
+        except Exception as e:
             print str(e)
             raise Exception, self.session.last_error()
 
