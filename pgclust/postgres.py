@@ -64,7 +64,7 @@ class PostgresManager(object):
         self.run('sudo -u %(pguser)s mkdir -p ~%(pguser)s/.ssh' % self.node)
         self.run('sudo cp /tmp/sshid_rsa ~%(pguser)s/.ssh/id_rsa' % self.node)
         self.run('sudo cp /tmp/sshid_rsa.pub ~%(pguser)s/.ssh/id_rsa.pub' % self.node)
-        self.run('sudo cp /tmp/sshconfig ~%(pguser)s/.ssh/config' %self.node)
+        self.run('sudo cp /tmp/sshconfig ~%(pguser)s/.ssh/config' % self.node)
         self.run('sudo rm /tmp/sshconfig /tmp/sshid_rsa /tmp/sshid_rsa.pub')
         self.run('sudo chown %(pguser)s:%(pguser)s ~%(pguser)s/.ssh/config' % self.node)
         self.run('sudo chown %(pguser)s:%(pguser)s ~%(pguser)s/.ssh/id_rsa' % self.node)
@@ -96,9 +96,8 @@ class PostgresManager(object):
         self.run('sudo rm /tmp/pgpg_hba.conf')
 
     def update_keys(self, nodes):
-        self.run('mkdir -p ~%(pguser)s/.ssh' % self.node)
-        self.run('chown %(pguser)s:%(pguser)s ~%(pguser)s/.ssh' % self.node)
-        self.run('chmod 700 ~%(pguser)s/.ssh' % self.node)
+        self.run('sudo -u %(pguser)s mkdir -p ~%(pguser)s/.ssh' % self.node)
+        self.run('sudo chmod 700 ~%(pguser)s/.ssh' % self.node)
         keys = []
         for node in nodes:
             key = local.read_file(node['pubkey'])
@@ -107,7 +106,6 @@ class PostgresManager(object):
         self.run('sudo cp /tmp/sshauthorized_keys ~%(pguser)s/.ssh/authorized_keys' % self.node)
         self.write_file('/tmp/sshid_rsa' % self.node, self.read_file(self.node['privkey']))
         self.write_file('/tmp/sshid_rsa.pub' % self.node, self.read_file(self.node['pubkey']))
-        self.run('sudo -u %(pguser)s mkdir -p ~%(pguser)s/.ssh' % self.node)
         self.run('sudo cp /tmp/sshid_rsa ~%(pguser)s/.ssh/id_rsa' % self.node)
         self.run('sudo cp /tmp/sshid_rsa.pub ~%(pguser)s/.ssh/id_rsa.pub' % self.node)
         self.run('sudo rm /tmp/sshauthorized_keys /tmp/sshid_rsa /tmp/sshid_rsa.pub')
