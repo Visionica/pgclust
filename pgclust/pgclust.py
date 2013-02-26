@@ -6,7 +6,7 @@ from local import shell, generate_key
 import argparse
 import sys
 import urlparse
-#from postgres import PostgresManager
+from postgres import PostgresManager
 
 class Manager(object):
     """docstring for Manager"""
