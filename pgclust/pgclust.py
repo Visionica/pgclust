@@ -6,7 +6,7 @@ from local import shell, generate_key
 import argparse
 import sys
 import urlparse
-from postgres import PostgresManager
+#from postgres import PostgresManager
 
 class Manager(object):
     """docstring for Manager"""
@@ -53,6 +53,12 @@ class Manager(object):
         parser_show.set_defaults(func=self.show)
         parser_show.add_argument('type', nargs='?', default='cluster', type=str,
             help='Who will be performing the action')
+
+        # repmgr command
+        parser_repmgr = subparsers.add_parser('repmgr')
+        parser_repmgr.set_defaults(func=self.repmgr)
+        parser_repmgr.add_argument('args', nargs='*', type=str,
+            help='Repmgr args')
 
         args = parser.parse_args()
         if args.verbose:
@@ -182,6 +188,12 @@ class Manager(object):
 
         for name in names:
             self.config.print_node(name)
+
+    def repmgr(self, args):
+        self.check_configuration()
+        master = self.config.config('node0')
+        args = vars(args)
+        print shell('repmgr -f /etc/postgresql/%(pgversion)s/%(cluster)s/repmgr.conf' % master + ' '.join(args))
 
     def check_configuration(self):
         # There should be at least a master node in configuration file
