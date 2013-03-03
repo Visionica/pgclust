@@ -1,3 +1,4 @@
+import os
 from ssh import SSHConnection
 import local
 import template
@@ -45,6 +46,9 @@ class PostgresManager(object):
             return self.connection.download(path)
 
     def init(self, master):
+        environ = os.environ.copy()
+        environ['PATH'] = '/usr/lib/postgresql/%(pgversion)s/bin:' + environ['PATH']
+
         self.stop()
         self.run('sudo pg_dropcluster %(pgversion)s %(cluster)s' % self.node)
         self.run('sudo pg_createcluster %(pgversion)s %(cluster)s' % self.node)
@@ -82,7 +86,7 @@ class PostgresManager(object):
             self.run('sudo -u %(pguser)s rm -rf /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
             self.run('sudo -u %(pguser)s mkdir /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
             self.run('sudo -u %(pguser)s chmod 700 /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
-            self.run('sudo -u %(pguser)s repmgr --verbose --force -D /var/lib/postgresql/%(pgversion)s/%(cluster)s -d repmgr -p 5432 -U repmgr -R %(pguser)s standby clone ' % self.node + master['hostname'])
+            self.run('sudo -u %(pguser)s PATH="' + environ['PATH'] + '" repmgr --verbose --force -D /var/lib/postgresql/%(pgversion)s/%(cluster)s -d repmgr -p 5432 -U repmgr -R %(pguser)s standby clone ' % self.node + master['hostname'])
             self.start()
             self.run('sudo -u %(pguser)s repmgr -f /etc/postgresql/%(pgversion)s/%(cluster)s/repmgr.conf --verbose standby register' % self.node)
 
