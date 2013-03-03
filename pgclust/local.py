@@ -3,19 +3,23 @@ import os
 import errno
 import variables
 
-def shell(cmd, err=None):
+def shell(cmd, err=False, retcode=False):
     output = ''
+    code = 0
     if variables.VERBOSE:
         print '[Local] executing %s' % (cmd, )
     try:
-        output = subprocess.check_output(cmd, shell=True)
+        output = subprocess.check_output(cmd, stderr=None if not err else subprocess.STDOUT, shell=True)
         if variables.VERBOSE:
             print output
     except subprocess.CalledProcessError as e:
         output = e.output
-        raise e
+        code = e.returncode
     finally:
-        return output
+        if not retcode:
+            return output
+        else:
+            return (code, output)
 
 def write_file(path, data):
     if variables.VERBOSE:

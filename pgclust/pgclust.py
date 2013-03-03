@@ -57,14 +57,26 @@ class Manager(object):
         # repmgr command
         parser_repmgr = subparsers.add_parser('repmgr')
         parser_repmgr.set_defaults(func=self.repmgr)
-        parser_repmgr.add_argument('args', nargs='*', type=str,
-            help='Repmgr args')
+        parser_repmgr.add_argument('type', nargs='?', default='', type=str,
+            choices=['standby', 'master'],
+            help='Who will be performing the action')
+        parser_repmgr.add_argument('action', nargs='?', default='', type=str,
+            choices=['register', 'clone', 'promote', 'follow'],
+            help='Action to perform')
+        parser_repmgr.add_argument('node', nargs='?', type=str,
+            help='Node to clone from')
 
         args = parser.parse_args()
         if args.verbose:
             variables.VERBOSE = True
-        args.func(args)
-        return 0
+
+        retcode = 0
+        try:
+            retcode = args.func(args)
+        except:
+            retcode = 1
+        finally:
+            return retcode
 
     def create(self, args):
         args = vars(args)
@@ -98,7 +110,6 @@ class Manager(object):
                 raise Exception('Non-local nodes should have ssh credentials supplied (username:password@hostname)')
         self.config.add_node(args)
         self.config.save()
-        pass
 
     def remove(self, args):
         args = vars(args)
@@ -190,10 +201,19 @@ class Manager(object):
             self.config.print_node(name)
 
     def repmgr(self, args):
-        self.check_configuration()
-        master = self.config.config('node0')
         args = vars(args)
-        print shell('repmgr -f /etc/postgresql/%(pgversion)s/%(cluster)s/repmgr.conf' % master + ' '.join(args))
+        cmd = 'sudo -u postgresql repmgr'
+        if args['type'] == 'master' and args['action'] != 'register':
+            raise Exception('Incorrect action "%s" for type master' % (args['action'],))
+        if args['action'] != 'clone':
+            cmd += ' -f /etc/postgresq/9.1/main/repmgr.conf %(type)s %(action)s' % args
+        else:
+            if args['node'] == '':
+                raise Exception('Node to clone from should be specified when performing "standby clone" action')
+            cmd += ' -D /var/lib/postgresql/9.1/main -d repmgr -p 5432 -U repmgr -R postgres --verbose --force standby clone %(node)s' % args
+        (retcode, output) = shell(cmd, err=True, retcode=True)
+        print output
+        return retcode
 
     def check_configuration(self):
         # There should be at least a master node in configuration file
