@@ -202,7 +202,7 @@ class Manager(object):
 
     def repmgr(self, args):
         args = vars(args)
-        cmd = 'sudo -u postgres repmgr'
+        cmd = 'sudo -u postgres PATH=/usr/lib/postgresql/9.1/bin:$PATH repmgr'
         if args['type'] == 'master' and args['action'] != 'register':
             raise Exception('Incorrect action "%s" for type master' % (args['action'],))
         if args['action'] != 'clone':
