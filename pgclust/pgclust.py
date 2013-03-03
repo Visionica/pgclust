@@ -4,7 +4,7 @@ from config import Config
 import variables
 from local import shell, generate_key
 import argparse
-import sys
+import os
 import urlparse
 from postgres import PostgresManager
 
@@ -202,7 +202,9 @@ class Manager(object):
 
     def repmgr(self, args):
         args = vars(args)
-        cmd = 'sudo -u postgres PATH=/usr/lib/postgresql/9.1/bin:$PATH repmgr'
+        environ = os.environ.copy()
+        environ['PATH'] = '/usr/lib/postgresql/9.1/bin:' + environ['PATH']
+        cmd = 'sudo -u postgres repmgr'
         if args['type'] == 'master' and args['action'] != 'register':
             raise Exception('Incorrect action "%s" for type master' % (args['action'],))
         if args['action'] != 'clone':
@@ -211,7 +213,7 @@ class Manager(object):
             if args['node'] == '':
                 raise Exception('Node to clone from should be specified when performing "standby clone" action')
             cmd += ' -D /var/lib/postgresql/9.1/main -d repmgr -p 5432 -U repmgr -R postgres --verbose --force standby clone %(node)s' % args
-        (retcode, output) = shell(cmd, err=True, retcode=True)
+        (retcode, output) = shell(cmd, err=True, retcode=True, environment=environ)
         print output
         return retcode
 

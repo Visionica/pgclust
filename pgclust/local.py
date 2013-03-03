@@ -3,13 +3,13 @@ import os
 import errno
 import variables
 
-def shell(cmd, err=False, retcode=False):
+def shell(cmd, err=False, retcode=False, environment=None):
     output = ''
     code = 0
     if variables.VERBOSE:
         print '[Local] executing %s' % (cmd, )
     try:
-        output = subprocess.check_output(cmd, stderr=None if not err else subprocess.STDOUT, shell=True)
+        output = subprocess.check_output(cmd, stderr=None if not err else subprocess.STDOUT, shell=True, env=environment)
         if variables.VERBOSE:
             print output
     except subprocess.CalledProcessError as e:
