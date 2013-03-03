@@ -86,7 +86,7 @@ class PostgresManager(object):
             self.run('sudo -u %(pguser)s rm -rf /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
             self.run('sudo -u %(pguser)s mkdir /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
             self.run('sudo -u %(pguser)s chmod 700 /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
-            self.run('sudo -u %(pguser)s PATH="' + environ['PATH'] + '" repmgr --verbose --force -D /var/lib/postgresql/%(pgversion)s/%(cluster)s -d repmgr -p 5432 -U repmgr -R %(pguser)s standby clone ' % self.node + master['hostname'])
+            self.run(('sudo -u %(pguser)s PATH="' + environ['PATH'] + '" repmgr --verbose --force -D /var/lib/postgresql/%(pgversion)s/%(cluster)s -d repmgr -p 5432 -U repmgr -R %(pguser)s standby clone ') % self.node + master['hostname'])
             self.start()
             self.run('sudo -u %(pguser)s repmgr -f /etc/postgresql/%(pgversion)s/%(cluster)s/repmgr.conf --verbose standby register' % self.node)
 
