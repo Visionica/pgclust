@@ -9,5 +9,5 @@ setup(name='pgclust',
     author_email='avtolstoy@gmail.com',
     url='http://tolstoy.it',
     packages=['pgclust'],
-    data_files=[('/usr/sbin', ['bin/pgclust'])]
+    data_files=[('/usr/sbin', ['bin/pgclust']), ('/usr/lib/pgclust', ['bin/pg_ctl'])]
     )
