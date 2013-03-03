@@ -47,12 +47,12 @@ class PostgresManager(object):
 
     def init(self, master):
         environ = os.environ.copy()
-        environ['PATH'] = '/usr/lib/postgresql/%(pgversion)s/bin:' + environ['PATH']
+        environ['PATH'] = '/usr/lib/pgclust:' + environ['PATH']
 
         self.stop()
         self.run('sudo pg_dropcluster %(pgversion)s %(cluster)s' % self.node)
         self.run('sudo pg_createcluster %(pgversion)s %(cluster)s' % self.node)
-        self.run('sudo chown -R %(pguser)s:%(pguser)s /var/lib/%(pgversion)s/%(cluster)s' % self.node)
+        self.run('sudo chown -R %(pguser)s:%(pguser)s /var/lib/postgresql/%(pgversion)s/%(cluster)s' % self.node)
         self.write_file('/tmp/pgpostgresql.conf', template.PG_CONFIG_TEMPLATE % self.node)
         self.write_file('/tmp/pgpg_hba.conf', template.PG_HBA_CONFIG_TEMPLATE % self.node)
         self.write_file('/tmp/pgrepmgr.conf', template.REPMGR_CONFIG_TEMPLATE % self.node)
