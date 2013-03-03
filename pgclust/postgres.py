@@ -48,6 +48,7 @@ class PostgresManager(object):
         self.stop()
         self.run('sudo pg_dropcluster %(pgversion)s %(cluster)s' % self.node)
         self.run('sudo pg_createcluster %(pgversion)s %(cluster)s' % self.node)
+        self.run('sudo chown -R %(pguser)s:%(pguser)s /var/lib/%(pgversion)s/%(cluster)s')
         self.write_file('/tmp/pgpostgresql.conf', template.PG_CONFIG_TEMPLATE % self.node)
         self.write_file('/tmp/pgpg_hba.conf', template.PG_HBA_CONFIG_TEMPLATE % self.node)
         self.write_file('/tmp/pgrepmgr.conf', template.REPMGR_CONFIG_TEMPLATE % self.node)

@@ -206,7 +206,7 @@ class Manager(object):
         if args['type'] == 'master' and args['action'] != 'register':
             raise Exception('Incorrect action "%s" for type master' % (args['action'],))
         if args['action'] != 'clone':
-            cmd += ' -f /etc/postgresq/9.1/main/repmgr.conf %(type)s %(action)s' % args
+            cmd += ' -f /etc/postgresql/9.1/main/repmgr.conf %(type)s %(action)s' % args
         else:
             if args['node'] == '':
                 raise Exception('Node to clone from should be specified when performing "standby clone" action')
