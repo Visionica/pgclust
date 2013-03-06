@@ -216,6 +216,9 @@ class Manager(object):
             cmd += ' -D /var/lib/postgresql/9.1/main -d repmgr -p 5432 -U repmgr -R postgres --verbose --force standby clone %(node)s' % args
 
         (retcode, output) = shell(cmd, err=True, retcode=True, environment=environ)
+        if args['action'] == 'clone' and retcode == 0:
+            (retcode, output1) = shell('sudo /etc/init.d/postgresql start', err=True, retcode=True)
+            output += output1
         print output
         return retcode
 
