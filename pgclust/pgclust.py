@@ -214,7 +214,7 @@ class Manager(object):
                 raise Exception('Node to clone from should be specified when performing "standby clone" action')
             shell('sudo /etc/init.d/postgresql stop')
             cmd += ' -D /var/lib/postgresql/9.1/main -d repmgr -p 5432 -U repmgr -R postgres --verbose --force standby clone %(node)s' % args
-        shell('sudo /etc/init.d/postgresql stop')
+
         (retcode, output) = shell(cmd, err=True, retcode=True, environment=environ)
         print output
         return retcode
