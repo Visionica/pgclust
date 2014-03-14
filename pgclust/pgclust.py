@@ -61,7 +61,7 @@ class Manager(object):
             choices=['standby', 'master'],
             help='Who will be performing the action')
         parser_repmgr.add_argument('action', nargs='?', default='', type=str,
-            choices=['register', 'clone', 'promote', 'follow'],
+            choices=['register', 'clone', 'promote', 'follow', 'stop'],
             help='Action to perform')
         parser_repmgr.add_argument('node', nargs='?', type=str,
             help='Node to clone from')
@@ -204,10 +204,19 @@ class Manager(object):
         args = vars(args)
         environ = os.environ.copy()
         environ['PATH'] = '/usr/lib/pgclust:' + environ['PATH']
+        (psqlstatus, psqout) = shell('sudo /etc/init.d/postgresql status', err=True, retcode=True, environment=environ)
+
         cmd = 'sudo -u postgres PATH="' + environ['PATH'] + '" repmgr'
+        if args['type'] == 'master' and args['action'] == 'stop':
+            (retcode, output) = shell('sudo /etc/init.d/postgresql stop', err=True, retcode=True)
+            return retcode
+
         if args['type'] == 'master' and args['action'] != 'register':
             raise Exception('Incorrect action "%s" for type master' % (args['action'],))
         if args['action'] != 'clone':
+            # If postgres is not running - start
+            if psqlstatus == 1:
+                shell('sudo /etc/init.d/postgresql start')
             cmd += ' -f /etc/postgresql/9.1/main/repmgr.conf %(type)s %(action)s' % args
         else:
             if args['node'] == '':
