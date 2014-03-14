@@ -215,7 +215,7 @@ class Manager(object):
             raise Exception('Incorrect action "%s" for type master' % (args['action'],))
         if args['action'] != 'clone':
             # If postgres is not running - start
-            if psqlstatus == 1:
+            if psqlstatus != 0:
                 shell('sudo /etc/init.d/postgresql start')
             cmd += ' -f /etc/postgresql/9.1/main/repmgr.conf %(type)s %(action)s' % args
         else:
