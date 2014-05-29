@@ -15,7 +15,7 @@ port = 5432
 listen_addresses='*'
 max_connections = 100
 unix_socket_directory = '/tmp'
-ssl = true
+ssl = false
 
 wal_level = 'hot_standby'
 archive_mode = on
@@ -25,8 +25,15 @@ max_wal_senders = 10
 wal_keep_segments = 5000    # 80 GB required on pg_xlog
 hot_standby = on
 
-shared_buffers = 24MB
-log_line_prefix = '%%t '
+shared_buffers = 2048MB
+effective_cache_size = 4096MB
+checkpoint_segments = 32
+maintenance_work_mem = 512MB
+work_mem = 160MB
+wal_buffers = 16MB
+synchronous_commit = on
+checkpoint_completion_target = 0.7
+log_line_prefix = '%t '
 datestyle = 'iso, mdy'
 lc_messages = 'en_US.UTF-8'
 lc_monetary = 'en_US.UTF-8'
