@@ -20,7 +20,7 @@ def shell(cmd, err=False, retcode=False, environment=None):
         if variables.VERBOSE:
             print output
     except subprocess.CalledProcessError as e:
-        output = e.output
+        output = read_file('/tmp/pgclust.log')
         code = e.returncode
     finally:
         if not retcode:
