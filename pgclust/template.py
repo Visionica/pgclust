@@ -14,7 +14,7 @@ ident_file = '/etc/postgresql/%(pgversion)s/%(cluster)s/pg_ident.conf'
 port = 5432
 listen_addresses='*'
 max_connections = 100
-unix_socket_directory = '/tmp'
+unix_socket_directories = '/tmp'
 ssl = false
 
 wal_level = 'hot_standby'
