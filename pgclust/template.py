@@ -72,6 +72,7 @@ cluster=main
 node=%(node)s
 node_name=%(name)s
 conninfo='host=%(hostname)s user=repmgr dbname=repmgr'
+pg_bindir=/usr/lib/postgresql/9.3/bin
 """
 
 SSH_CONFIG = """
