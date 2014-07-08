@@ -8,18 +8,19 @@ def shell(cmd, err=False, retcode=False, environment=None):
     code = 0
     if variables.VERBOSE:
         print '[Local] executing %s' % (cmd, )
-    try:
-        output = subprocess.check_output(cmd, stderr=None if not err else subprocess.STDOUT, shell=True, env=environment)
-        if variables.VERBOSE:
-            print output
-    except subprocess.CalledProcessError as e:
-        output = e.output
-        code = e.returncode
-    finally:
-        if not retcode:
-            return output
-        else:
-            return (code, output)
+    sp = subprocess.Popen(cmd, stderr=None if not err else subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=environment)
+    output, errout = sp.communicate()
+    if output is None:
+        output = ''
+    if errout is not None:
+        output += errout
+    code = sp.returncode
+    if variables.VERBOSE:
+        print output
+    if not retcode:
+        return output
+    else:
+        return (code, output)
 
 def write_file(path, data):
     if variables.VERBOSE:
