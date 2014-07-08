@@ -30,7 +30,7 @@ class Manager(object):
         parser_create.add_argument('--local', action='store_true', help='Node is local')
         parser_create.add_argument('--pguser', nargs='?', default='postgres', type=str,
             help='Postgres username')
-        parser_create.add_argument('--pgversion', nargs='?', default='9.1', type=str,
+        parser_create.add_argument('--pgversion', nargs='?', default='9.3', type=str,
             help='Postgres version')
 
         # remove command
@@ -217,12 +217,12 @@ class Manager(object):
             # If postgres is not running - start
             if psqlstatus != 0:
                 shell('sudo /etc/init.d/postgresql start')
-            cmd += ' -f /etc/postgresql/9.1/main/repmgr.conf %(type)s %(action)s' % args
+            cmd += ' -f /etc/postgresql/9.3/main/repmgr.conf %(type)s %(action)s' % args
         else:
             if args['node'] == '':
                 raise Exception('Node to clone from should be specified when performing "standby clone" action')
             shell('sudo /etc/init.d/postgresql stop')
-            cmd += ' -D /var/lib/postgresql/9.1/main -d repmgr -p 5432 -U repmgr -R postgres --verbose --force standby clone %(node)s' % args
+            cmd += ' -D /var/lib/postgresql/9.3/main -d repmgr -p 5432 -U repmgr -R postgres --verbose --force standby clone %(node)s' % args
 
         (retcode, output) = shell(cmd, err=True, retcode=True, environment=environ)
         if args['action'] == 'clone' and retcode == 0:
