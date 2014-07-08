@@ -6,21 +6,27 @@ import variables
 def shell(cmd, err=False, retcode=False, environment=None):
     output = ''
     code = 0
+    cmd += ' >/tmp/pgclust.log'
+    if err:
+        cmd += ' 2>&1'
+    else:
+        cmd += ' 2>/dev/null'
     if variables.VERBOSE:
         print '[Local] executing %s' % (cmd, )
-    sp = subprocess.Popen(cmd, stderr=None if not err else subprocess.PIPE, stdout=subprocess.PIPE, shell=True, env=environment)
-    output, errout = sp.communicate()
-    if output is None:
-        output = ''
-    if errout is not None:
-        output += errout
-    code = sp.returncode
-    if variables.VERBOSE:
-        print output
-    if not retcode:
-        return output
-    else:
-        return (code, output)
+    try:
+        code = subprocess.check_call(cmd, shell=True, env=environment)
+        output = read_file('/tmp/pgclust.log')
+
+        if variables.VERBOSE:
+            print output
+    except subprocess.CalledProcessError as e:
+        output = e.output
+        code = e.returncode
+    finally:
+        if not retcode:
+            return output
+        else:
+            return (code, output)
 
 def write_file(path, data):
     if variables.VERBOSE:
